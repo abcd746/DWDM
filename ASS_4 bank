@@ -1,0 +1,165 @@
+create database bank;
+use bank;
+
+-- Create the Dim_Date table
+CREATE TABLE Dim_Address (
+    Address_Key INT PRIMARY KEY,
+    Street_Address VARCHAR(255),
+    City VARCHAR(100),
+    State VARCHAR(100),
+    Zip_Code VARCHAR(10),
+    Country VARCHAR(100)
+);
+
+CREATE TABLE Dim_Date (
+    Date_Key INT PRIMARY KEY,
+    Full_Date DATE,
+    Month INT,
+    Quarter VARCHAR(2),
+    Year INT,
+    Day_Of_Week VARCHAR(10)
+);
+
+-- Create the Dim_Customer table
+CREATE TABLE Dim_Customer (
+    Customer_Key INT PRIMARY KEY,
+    Customer_ID VARCHAR(20),
+    Customer_Name VARCHAR(100),
+    Date_Of_Birth DATE,
+    Gender VARCHAR(1),
+    Address_Key INT,
+    Phone_Number VARCHAR(20),
+    Email VARCHAR(100),
+    Marital_Status VARCHAR(20),
+    Employment_Status VARCHAR(20),
+    FOREIGN KEY (Address_Key) REFERENCES Dim_Address(Address_Key)
+);
+
+-- Create the Dim_Account table
+CREATE TABLE Dim_Account (
+    Account_Key INT PRIMARY KEY,
+    Account_ID VARCHAR(20),
+    Account_Type VARCHAR(20),
+    Account_Open_Date DATE,
+    Account_Status VARCHAR(10),
+    Customer_Key INT,
+    FOREIGN KEY (Customer_Key) REFERENCES Dim_Customer(Customer_Key)
+);
+
+-- Create the Dim_Branch table
+CREATE TABLE Dim_Branch (
+    Branch_Key INT PRIMARY KEY,
+    Branch_ID VARCHAR(20),
+    Branch_Name VARCHAR(100),
+    Branch_Location INT,
+    Branch_Manager VARCHAR(100),
+    Branch_Contact VARCHAR(20),
+    FOREIGN KEY (Branch_Location) REFERENCES Dim_Address(Address_Key)
+);
+
+-- Create the Dim_Product table
+CREATE TABLE Dim_Product (
+    Product_Key INT PRIMARY KEY,
+    Product_ID VARCHAR(20),
+    Product_Name VARCHAR(100),
+    Product_Type VARCHAR(20),
+    Interest_Rate DECIMAL(5,2),
+    Product_Term VARCHAR(20)
+);
+
+-- Create the Fact_Transactions table
+CREATE TABLE Fact_Transactions (
+    Transaction_ID INT PRIMARY KEY,
+    Date_Key INT,
+    Customer_Key INT,
+    Account_Key INT,
+    Branch_Key INT,
+    Product_Key INT,
+    Transaction_Amount DECIMAL(10,2),
+    Transaction_Type VARCHAR(20),
+    Transaction_Fee DECIMAL(5,2),
+    FOREIGN KEY (Date_Key) REFERENCES Dim_Date(Date_Key),
+    FOREIGN KEY (Customer_Key) REFERENCES Dim_Customer(Customer_Key),
+    FOREIGN KEY (Account_Key) REFERENCES Dim_Account(Account_Key),
+    FOREIGN KEY (Branch_Key) REFERENCES Dim_Branch(Branch_Key),
+    FOREIGN KEY (Product_Key) REFERENCES Dim_Product(Product_Key)
+);
+
+-- Create the Dim_Address table
+
+
+-- Insert data into Dim_Date
+INSERT INTO Dim_Date (Date_Key, Full_Date, Month, Quarter, Year, Day_Of_Week)
+VALUES
+(20240810, '2024-08-10', 8, 'Q3', 2024, 'Saturday'),
+(20240811, '2024-08-11', 8, 'Q3', 2024, 'Sunday'),
+(20240812, '2024-08-12', 8, 'Q3', 2024, 'Monday'),
+(20240813, '2024-08-13', 8, 'Q3', 2024, 'Tuesday'),
+(20240814, '2024-08-14', 8, 'Q3', 2024, 'Wednesday'),
+(20240815, '2024-08-15', 8, 'Q3', 2024, 'Thursday'),
+(20240816, '2024-08-16', 8, 'Q3', 2024, 'Friday');
+
+-- Insert data into Dim_Address
+INSERT INTO Dim_Address (Address_Key, Street_Address, City, State, Zip_Code, Country)
+VALUES
+(1, '123 Elm St', 'Springfield', 'IL', '62701', 'USA'),
+(2, '456 Oak St', 'Springfield', 'IL', '62702', 'USA'),
+(3, '789 Pine St', 'Springfield', 'IL', '62703', 'USA'),
+(4, '101 Maple Ave', 'Springfield', 'IL', '62704', 'USA'),
+(5, '202 Birch Blvd', 'Springfield', 'IL', '62705', 'USA'),
+(6, '303 Cedar Ln', 'Springfield', 'IL', '62706', 'USA'),
+(7, '404 Willow Way', 'Springfield', 'IL', '62707', 'USA');
+
+-- Insert data into Dim_Customer
+INSERT INTO Dim_Customer (Customer_Key, Customer_ID, Customer_Name, Date_Of_Birth, Gender, Address_Key, Phone_Number, Email, Marital_Status, Employment_Status)
+VALUES
+(501, 'CUST001', 'John Doe', '1985-06-15', 'M', 1, '555-1234', 'john.doe@example.com', 'Single', 'Employed'),
+(502, 'CUST002', 'Jane Smith', '1990-12-22', 'F', 2, '555-5678', 'jane.smith@example.com', 'Married', 'Self-Employed'),
+(503, 'CUST003', 'Alice Johnson', '1978-05-09', 'F', 3, '555-8765', 'alice.johnson@example.com', 'Divorced', 'Unemployed'),
+(504, 'CUST004', 'Bob Brown', '1983-11-30', 'M', 4, '555-4321', 'bob.brown@example.com', 'Married', 'Retired'),
+(505, 'CUST005', 'Charlie Davis', '1995-07-18', 'M', 5, '555-6789', 'charlie.davis@example.com', 'Single', 'Employed'),
+(506, 'CUST006', 'Eve Wilson', '1988-03-23', 'F', 6, '555-3456', 'eve.wilson@example.com', 'Married', 'Student'),
+(507, 'CUST007', 'Grace Lee', '2000-01-30', 'F', 7, '555-7890', 'grace.lee@example.com', 'Single', 'Intern');
+
+-- Insert data into Dim_Account
+INSERT INTO Dim_Account (Account_Key, Account_ID, Account_Type, Account_Open_Date, Account_Status, Customer_Key)
+VALUES
+(3001, 'ACC001', 'Checking', '2022-01-10', 'Active', 501),
+(3002, 'ACC002', 'Savings', '2023-03-15', 'Active', 502),
+(3003, 'ACC003', 'Loan', '2021-07-20', 'Active', 503),
+(3004, 'ACC004', 'Credit Card', '2020-10-25', 'Closed', 504),
+(3005, 'ACC005', 'Mortgage', '2019-11-12', 'Active', 505),
+(3006, 'ACC006', 'Checking', '2024-02-01', 'Active', 506),
+(3007, 'ACC007', 'Savings', '2023-08-09', 'Active', 507);
+
+-- Insert data into Dim_Branch
+INSERT INTO Dim_Branch (Branch_Key, Branch_ID, Branch_Name, Branch_Location, Branch_Manager, Branch_Contact)
+VALUES
+(101, 'BR001', 'Main Branch', 1, 'Michael Scott', '555-0001'),
+(102, 'BR002', 'East Branch', 2, 'Dwight Schrute', '555-0002'),
+(103, 'BR003', 'West Branch', 3, 'Jim Halpert', '555-0003'),
+(104, 'BR004', 'North Branch', 4, 'Pam Beesly', '555-0004'),
+(105, 'BR005', 'South Branch', 5, 'Stanley Hudson', '555-0005');
+
+-- Insert data into Dim_Product
+INSERT INTO Dim_Product (Product_Key, Product_ID, Product_Name, Product_Type, Interest_Rate, Product_Term)
+VALUES
+(2001, 'PROD001', 'Standard Checking', 'Checking', 0.01, 'N/A'),
+(2002, 'PROD002', 'High-Yield Savings', 'Savings', 0.03, 'N/A'),
+(2003, 'PROD003', 'Personal Loan', 'Loan', 0.05, '5 years'),
+(2004, 'PROD004', 'Platinum Credit Card', 'Credit Card', 0.02, 'N/A'),
+(2005, 'PROD005', '30-Year Mortgage', 'Mortgage', 0.04, '30 years'),
+(2006, 'PROD006', 'Basic Checking', 'Checking', 0.00, 'N/A'),
+(2007, 'PROD007', 'Kids Savings Account', 'Savings', 0.02, 'N/A');
+
+-- Insert data into Fact_Transactions
+INSERT INTO Fact_Transactions (Transaction_ID, Date_Key, Customer_Key, Account_Key, Branch_Key, Product_Key, Transaction_Amount, Transaction_Type, Transaction_Fee)
+VALUES
+(1001, 20240810, 501, 3001, 101, 2001, 150.75, 'Debit', 1.50),
+(1002, 20240810, 502, 3002, 102, 2002, 75.20, 'Credit', 0.00),
+(1003, 20240811, 503, 3003, 103, 2003, 200.00, 'Debit', 2.00),
+(1004, 20240812, 504, 3004, 101, 2004, 500.00, 'Credit', 0.00),
+(1005, 20240812, 505, 3005, 104, 2005, 300.50, 'Debit', 3.00),
+(1006, 20240813, 506, 3006, 105, 2006, 120.25, 'Credit', 0.00),
+(1007, 20240814, 507, 3007, 102, 2007, 250.00, 'Debit', 2.50);
+
