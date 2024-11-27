@@ -1,0 +1,135 @@
+create database ordermanagement;
+use ordermanagement;
+
+-- DimCustomer Table
+CREATE TABLE DimCustomer (
+    CustomerID INT PRIMARY KEY,
+    CustomerName VARCHAR(100),
+    BillingAddress VARCHAR(255),
+    ShippingAddress VARCHAR(255)
+);
+insert into DimCustomer
+VALUES(1,"Manish","Pune","Mumbai"),
+(2,"Shabnam","Mumbai","Pune"),
+(3,"Pratik","Kolkata","Kerela"),
+(4,"Rajesh","Kerala","Kolkata"),
+(5,"Mitali","Mysore","Banglore"),
+(6,"Priyal","Banglore","Mysore"),
+(7,"Sachin","Goa","Nagpur");
+select * from DimCustomer;
+-- DimProduct Table
+CREATE TABLE DimProduct (
+    ProductID INT PRIMARY KEY,
+    ProductName VARCHAR(100),
+    ProductPrice DECIMAL(10, 2)
+);
+INSERT INTO DimProduct (ProductID, ProductName, ProductPrice) VALUES
+(1, 'Laptop', 50000.00),
+(2, 'Smartphone', 20000.00),
+(3, 'Tablet', 15000.00),
+(4, 'Smartwatch', 10000.00),
+(5, 'Headphones', 3000.00),
+(6, 'Camera', 25000.00),
+(7, 'Printer', 8000.00);
+select * from DimProduct;
+
+-- DimSalesRep Table
+CREATE TABLE DimSalesRep (
+    SalesRepID INT PRIMARY KEY,
+    SalesRepName VARCHAR(100)
+);
+INSERT INTO DimSalesRep (SalesRepID, SalesRepName) VALUES
+(1, 'Ravi Kumar'),
+(2, 'Anita Sharma'),
+(3, 'Suresh Mehta'),
+(4, 'Priya Singh'),
+(5, 'Rajesh Patel'),
+(6, 'Neha Gupta'),
+(7, 'Vikram Rao')
+select * from DimSalesRep;
+
+-- DimDeal Table
+CREATE TABLE DimDeal (
+    DealID INT PRIMARY KEY,
+    DealDescription VARCHAR(255),
+    DiscountPercentage DECIMAL(5, 2)
+)
+INSERT INTO DimDeal (DealID, DealDescription, DiscountPercentage) VALUES
+(1, 'Summer Sale', 10.00),
+(2, 'Winter Discount', 15.00),
+(3, 'New Year Offer', 5.00),
+(4, 'Black Friday Deal', 20.00),
+(5, 'Cyber Monday Discount', 25.00),
+(6, 'Spring Promotion', 8.00),
+(7, 'Holiday Special', 12.00);
+select * from DimDeal;
+
+-- DimDate Table
+CREATE TABLE DimDate (
+    DateID INT PRIMARY KEY,
+    FullDate DATE,
+    Year INT,
+    Quarter INT,
+    Month INT,
+    Day INT,
+    Week INT,
+    DayOfWeek INT
+);
+INSERT INTO DimDate (DateID, FullDate, Year, Quarter, Month, Day, Week, DayOfWeek) VALUES
+(1, '2023-01-01', 2023, 1, 1, 1, 1, 1),
+(2, '2023-01-02', 2023, 1, 1, 2, 1, 2),
+(3, '2023-01-03', 2023, 1, 1, 3, 1, 3),
+(4, '2023-01-04', 2023, 1, 1, 4, 1, 4),
+(5, '2023-01-05', 2023, 1, 1, 5, 1, 5),
+(6, '2023-01-06', 2023, 1, 1, 6, 1, 6),
+(7, '2023-01-07', 2023, 1, 1, 7, 1, 7);
+select * from DimDate;
+
+-- DimCurrency Table
+CREATE TABLE DimCurrency (
+    CurrencyID INT PRIMARY KEY,
+    CurrencyName VARCHAR(50),
+    ExchangeRateToUSD DECIMAL(10, 6)
+);
+INSERT INTO DimCurrency (CurrencyID, CurrencyName, ExchangeRateToUSD) VALUES
+(1, 'USD', 1.000000),
+(2, 'AED', 0.272294),
+(3, 'EUR', 1.180000),
+(4, 'JPY', 0.009500),
+(5, 'GBP', 1.380000),
+(6, 'CAD', 0.800000),
+(7, 'AUD', 0.740000);
+select * from DimCurrency;
+
+-- FactOrder Table
+CREATE TABLE FactOrder (
+    OrderID INT,
+    OrderDateID INT,
+    RequestedShipDateID INT,
+    CustomerID INT,
+    ProductID INT,
+    SalesRepID INT,
+    DealID INT,
+    Quantity INT,
+    GrossAmount DECIMAL(10, 2),
+    NetAmount DECIMAL(10, 2),
+    CurrencyID INT,
+    PRIMARY KEY (OrderID, ProductID),
+    FOREIGN KEY (OrderDateID) REFERENCES DimDate(DateID),
+    FOREIGN KEY (RequestedShipDateID) REFERENCES DimDate(DateID),
+    FOREIGN KEY (CustomerID) REFERENCES DimCustomer(CustomerID),
+    FOREIGN KEY (ProductID) REFERENCES DimProduct(ProductID),
+    FOREIGN KEY (SalesRepID) REFERENCES DimSalesRep(SalesRepID),
+    FOREIGN KEY (DealID) REFERENCES DimDeal(DealID),
+    FOREIGN KEY (CurrencyID) REFERENCES DimCurrency(CurrencyID)
+);
+INSERT INTO FactOrder (OrderID, OrderDateID, RequestedShipDateID, CustomerID, ProductID, SalesRepID, DealID, Quantity, GrossAmount, NetAmount, CurrencyID) VALUES
+(1, 1, 2, 1, 1, 1, 1, 5, 500.00, 450.00, 1),
+(2, 2, 3, 2, 2, 2, 2, 10, 1000.00, 850.00, 2),
+(3, 3, 4, 3, 3, 3, 3, 15, 1500.00, 1425.00, 3),
+(4, 4, 5, 4, 4, 4, 4, 20, 2000.00, 1600.00, 4),
+(5, 5, 6, 5, 5, 5, 5, 25, 2500.00, 1875.00, 5),
+(6, 6, 7, 6, 6, 6, 6, 30, 3000.00, 2760.00, 6),
+(7, 7, 1, 7, 7, 7, 7, 35, 3500.00, 3080.00, 7);
+select * from FactOrder;
+
